@@ -1,0 +1,47 @@
+# Hardware password manager
+
+Main idea: A physical password manager that auto-injects temporary .exe binary as an interface to the password manager device.
+
+Hardware:
+	- Some small Arduino or ATTiny
+	- SPI Flash Memory Winbond?
+	- Button
+
+Software:
+	- Binary uploader (Uploads .exe binary to flash memory)
+	- Password manager back-end
+	- Password manager interface
+
+Usage:
+	1. Plug the device into a USB slot
+	2. Press button on device
+		2.1. If it is the first time running the device, inject the interface .exe into a temporary directory
+		2.2. Run interface .exe, which opens a terminal menu
+	3. Select account (A popup opens that shows which account has been selected)
+	4. Go to login input
+	5. Press button once: Username is copied into clipboard
+	6. Paste username
+	7. Press button again: Password is copied into clipboard
+	8. Paste password
+	9. Login
+	10. Press button again: deselect account or close interface (Configurable)
+
+Interface:
+	- Move around with arrow keys, go to previous menu with Esc, select with Enter (Select menus and stuff with function keys?)
+	- Main menu: a scrollable list of all stored accounts indexed by user-given label
+
+	Add an entry: 
+		1. Select `Add account` in the password manager
+		2. A new menu opens with inputs `Label`, `Username`, `Password` and buttons `Ok`, `Cancel`
+	Remove an entry:
+		1. Select account
+		2. Select `Delete` option
+
+Ideas:
+	- Some installable tool that runs in the background that auto-backups and encrypts data stored in the password manager device
+		- Only for authorized devices (Requires some sort of key? SSH?)
+	- On-device encryption?
+	- Interface includes some sort of authentication that only lets it communicate with the device (SSH?)
+
+FYI:
+	- Press = Hold for ~250ms?
