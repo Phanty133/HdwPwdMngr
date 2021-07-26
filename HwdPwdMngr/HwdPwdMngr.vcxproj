@@ -140,10 +140,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DeviceDriver.cpp" />
+    <ClCompile Include="DrawUtil.cpp" />
     <ClCompile Include="HdwPwdMngr.cpp" />
+    <ClCompile Include="ListElement.cpp" />
+    <ClCompile Include="MenuBase.cpp" />
+    <ClCompile Include="MenuConfig.cpp" />
+    <ClCompile Include="MenuMain.cpp" />
+    <ClCompile Include="Popup.cpp" />
+    <ClCompile Include="Scrollbar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="notes.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DeviceDriver.h" />
+    <ClInclude Include="DrawUtil.h" />
+    <ClInclude Include="ListElement.h" />
+    <ClInclude Include="MenuBase.h" />
+    <ClInclude Include="MenuConfig.h" />
+    <ClInclude Include="MenuMain.h" />
+    <ClInclude Include="Popup.h" />
+    <ClInclude Include="Scrollbar.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
