@@ -4,16 +4,15 @@
 #include "Popup.h"
 #include "MenuMain.h"
 #include "MenuConfig.h"
-#include "ListElement.h"
 
-enum STATE {
+enum class STATE {
 	IDLE,
 	WORKING,
 	WAITING_FOR_USER,
 	WAITING_FOR_DEVICE
 } progState;
 
-enum ACTION {
+enum class ACTION {
 	NONE,
 	GOTO_MAIN,
 	GOTO_CONFIG,
@@ -22,52 +21,48 @@ enum ACTION {
 	QUIT
 } progAction;
 
-/* ACTION readInput() {
-
-} */
-
-//WINDOW* drawMenuConfig() {
-//
-//}
+MenuMain* menuMain;
+Menu* activeMenu = nullptr;
 
 bool update() {
-	switch (progState) {
-		case IDLE:
-			break;
-		case WORKING:
-			break;
-		case WAITING_FOR_USER:
-			{
-				int ch = getch();
-
-				switch (ch) {
-				case KEY_DOWN:
-					// list.moveDown();
-					break;
-				case KEY_UP:
-					// list.moveUp();
-					break;
-				}
-			}
-			
-			break;
-		case WAITING_FOR_DEVICE:
-			break;
-		}
-
 	switch (progAction) {
-		case NONE:
-			break;
-		case GOTO_MAIN:
-			drawMenuMain();
-			break;
-		case GOTO_CONFIG:
-			drawMenuConfig();
-			break;
-		case QUIT:
-			endwin();
-			return false;
-			break;
+	case ACTION::NONE:
+		break;
+	case ACTION::GOTO_MAIN:
+		menuMain->draw();
+		activeMenu = menuMain;
+		progState = STATE::WAITING_FOR_USER;
+		break;
+	case ACTION::GOTO_CONFIG:
+		drawMenuConfig();
+		break;
+	case ACTION::QUIT:
+		endwin();
+		return false;
+		break;
+	}
+
+	if (progAction != ACTION::NONE) {
+		progAction = ACTION::NONE;
+	}
+
+	switch (progState) {
+	case STATE::IDLE:
+		break;
+	case STATE::WORKING:
+		break;
+	case STATE::WAITING_FOR_USER:
+		{
+			int ch = getch();
+
+			if (activeMenu != nullptr) {
+				activeMenu->inputHandler(ch);
+			}
+		}
+			
+		break;
+	case STATE::WAITING_FOR_DEVICE:
+		break;
 	}
 
 	return true;
@@ -86,30 +81,14 @@ int main() {
 	init_pair(1, COLOR_BLACK, COLOR_WHITE); // Button color
 	init_pair(2, COLOR_RED, COLOR_WHITE); // Selected entry color
 
+	menuMain = new MenuMain(getmaxy(stdscr), getmaxx(stdscr));
+	progAction = ACTION::GOTO_MAIN;
+
 	refresh();
-	//openPopupInfo("Hey now", "Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! ");
-
-	ListColumn col1("Label", "label");
-	ListColumn col2("Username", "username", 50);
-
-	std::vector<ListColumn> cols;
-	cols.push_back(col1);
-	cols.push_back(col2);
-
-	std::vector<DataEntry> data;
-	
-	for (int i = 0; i < 420; i++) {
-		DataEntry entry;
-		entry["label"] = "ThisIsLabel" + std::to_string(i);
-		entry["username"] = "ThisIsUsername" + std::to_string(i);
-
-		data.push_back(entry);
-
-	}
-
-	ListElement list = ListElement(0, 0, 20, 100, cols, data);
 
 	while (update()) {}
+
+	delete menuMain;
 
 	return 0;
 }

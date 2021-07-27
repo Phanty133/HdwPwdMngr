@@ -32,10 +32,12 @@ typedef std::map<std::string, std::string> DataEntry;
 
 class ListElement {
 public:	
-	ListElement(int y, int x, int h, int w, std::vector<ListColumn> cols, std::vector<DataEntry> data);
+	ListElement(int y, int x, int h, int w, std::vector<ListColumn> cols, std::vector<DataEntry> data, WINDOW* parentWindow = nullptr);
 	void moveUp(); // Selects the item above the currently selected item
 	void moveDown(); // Selects the item below the currently selected item
 	void selectEntry(int index); // Select entry at `index`
+	void setData(std::vector<DataEntry> data);
+	void setCols(std::vector<ListColumn> cols);
 
 	const int& c_cur = m_cur;
 	const int& c_x = m_x;
@@ -73,4 +75,5 @@ private:
 	int m_entryStartY; // Y of where entries start (Right after the header)
 	int m_entryPageSize; // How many entries can fit on the screen at one time
 	int m_counterDigitCount;
+	std::pair<int, int> m_visibleIndexRange;
 };

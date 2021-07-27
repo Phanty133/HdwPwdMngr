@@ -16,10 +16,10 @@ int wprintInLines(WINDOW* win, std::string msg, int maxLen, int y0, int x0, Text
 		std::string writeMsg = msg.substr(lineWidth * i, lineWidth);
 
 		switch (align) {
-		case LEFT:
+		case TextAlign::LEFT:
 			mvwaddstr(win, y0 + i, x0, writeMsg.c_str());
 			break;
-		case CENTER:
+		case TextAlign::CENTER:
 		{
 			const int offset = (maxLen - writeMsg.length()) / 2;
 
@@ -31,7 +31,7 @@ int wprintInLines(WINDOW* win, std::string msg, int maxLen, int y0, int x0, Text
 			mvwaddstr(win, y0 + i, x0 + offset, writeMsg.c_str());
 		}
 		break;
-		case RIGHT:
+		case TextAlign::RIGHT:
 		{
 			const int offset = maxLen - writeMsg.length();
 
@@ -63,7 +63,7 @@ void drawButton(WINDOW* win, std::string text, int cy, int cx, int h, int w, int
 	const int textY = y0 + vertPadding / 2;
 
 	mvwaddstr(win, textY, x0, std::string(PADDING_H, ' ').c_str()); // Text padding
-	wprintInLines(win, text, w - PADDING_H * 2, textY, x0 + PADDING_H, CENTER, true); // Print text
+	wprintInLines(win, text, w - PADDING_H * 2, textY, x0 + PADDING_H, TextAlign::CENTER, true); // Print text
 	mvwaddstr(win, textY, x0 + w - PADDING_H, std::string(PADDING_H, ' ').c_str()); // Text padding
 
 	// Print bottom padding

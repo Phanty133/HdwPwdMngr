@@ -147,6 +147,7 @@
     <ClCompile Include="MenuBase.cpp" />
     <ClCompile Include="MenuConfig.cpp" />
     <ClCompile Include="MenuMain.cpp" />
+    <ClCompile Include="Navbar.cpp" />
     <ClCompile Include="Popup.cpp" />
     <ClCompile Include="Scrollbar.cpp" />
   </ItemGroup>
@@ -160,6 +161,7 @@
     <ClInclude Include="MenuBase.h" />
     <ClInclude Include="MenuConfig.h" />
     <ClInclude Include="MenuMain.h" />
+    <ClInclude Include="Navbar.h" />
     <ClInclude Include="Popup.h" />
     <ClInclude Include="Scrollbar.h" />
   </ItemGroup>

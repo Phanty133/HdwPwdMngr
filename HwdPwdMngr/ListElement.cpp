@@ -3,7 +3,7 @@
 
 constexpr int COL_PADDING = 2;
 
-ListElement::ListElement(int y, int x, int h, int w, std::vector<ListColumn> cols, std::vector<DataEntry> data)
+ListElement::ListElement(int y, int x, int h, int w, std::vector<ListColumn> cols, std::vector<DataEntry> data, WINDOW* parentWindow)
 {
 	m_cols = cols;
 	m_data = data;
@@ -11,9 +11,13 @@ ListElement::ListElement(int y, int x, int h, int w, std::vector<ListColumn> col
 	m_y = y;
 	m_w = w;
 	m_h = h;
-	m_counterDigitCount = std::floor(std::log10(c_data.size()) + 1); // Counter format: AA...AA/BB...BB, e.g. 001/100
-	m_wTable = w - (m_counterDigitCount * 2 + 3);
-	m_win = newwin(c_h, c_w, c_x, c_y);
+
+	if (parentWindow == nullptr) {
+		m_win = newwin(c_h, c_w, c_y, c_x);
+	}
+	else {
+		m_win = derwin(parentWindow, c_h, c_w, c_y, c_x);
+	}
 
 	for (auto& col : m_cols) {
 		m_keyedCols.insert(std::pair<std::string, ListColumn>(col.key, col));
@@ -24,6 +28,8 @@ ListElement::ListElement(int y, int x, int h, int w, std::vector<ListColumn> col
 
 void ListElement::drawHeaders()
 {
+	if (c_cols.size() == 0) return;
+
 	// Calculate default header width based on headers with set width
 
 	int reservedWidth = 0;
@@ -39,6 +45,11 @@ void ListElement::drawHeaders()
 
 	const int defaultWidth = defaultCols != 0 ? (m_wTable - reservedWidth) / defaultCols : 0;
 
+	if (reservedWidth > m_wTable) {
+		throw "Predetermined column width greater than table width";
+		return;
+	}
+
 	// Draw each column
 
 	int maxTextHeight = 0;
@@ -53,7 +64,7 @@ void ListElement::drawHeaders()
 			colWidth,
 			1,
 			colX0,
-			CENTER,
+			TextAlign::CENTER,
 			false
 		);
 
@@ -91,10 +102,18 @@ void ListElement::drawEntry(DataEntry entry, int y)
 
 void ListElement::drawEntries()
 {
-	int entryY = m_entryStartY;
-	int entryIndex0 = std::max(m_cur - m_entryPageSize, 0);
+	if (c_cols.size() == 0 || c_data.size() == 0) return;
 
-	for (int i = entryIndex0; i <= entryIndex0 + m_entryPageSize; i++) {
+	m_entryY.clear();
+
+	int entryY = m_entryStartY;
+	int entryIndex0 = std::max(m_cur - (m_cur < m_visibleIndexRange.first ? 0 : m_entryPageSize), 0);
+
+	int entryIndexLast = std::min(entryIndex0 + m_entryPageSize, (int)c_data.size() - 1);
+
+	m_visibleIndexRange = std::pair<int, int>(entryIndex0, entryIndexLast);
+
+	for (int i = entryIndex0; i <= entryIndexLast; i++) {
 		m_entryY.insert(std::pair<int, int>(i, entryY));
 		drawEntry(c_data[i], entryY++);
 	}
@@ -118,7 +137,7 @@ void ListElement::unhighlightEntry(int index)
 
 void ListElement::updateEntryCounter()
 {
-	int posDigitCount = std::floor(std::log10(m_cur + 1) + 1);
+	int posDigitCount = std::floor(std::log10(m_cur == -1 ? 1 : (m_cur + 1)) + 1);
 	std::string counterText = std::string(m_counterDigitCount - posDigitCount, '0') + std::to_string(m_cur + 1);
 	mvwaddstr(m_win, 1, m_wTable, counterText.c_str());
 }
@@ -129,13 +148,34 @@ void ListElement::selectEntry(int index)
 	int prevIndex = m_cur;
 	m_cur = std::min(std::max(index, 0), (int) c_data.size() - 1); // Clamp the index
 
-	if (m_cur > m_entryPageSize || prevIndex > m_cur) { // If the current position is off the first page
+	if (m_cur < m_visibleIndexRange.first || m_cur > m_visibleIndexRange.second) {
 		drawEntries();
 	}
 
 	highlightEntry(m_cur);
 	updateEntryCounter();
 	wrefresh(m_win);
+}
+
+void ListElement::setData(std::vector<DataEntry> data)
+{
+	m_data = data;
+
+	wclear(m_win);
+	draw();
+}
+
+void ListElement::setCols(std::vector<ListColumn> cols)
+{
+	m_cols = cols;
+	m_keyedCols.clear();
+
+	for (auto& col : m_cols) {
+		m_keyedCols.insert(std::pair<std::string, ListColumn>(col.key, col));
+	}
+
+	wclear(m_win);
+	draw();
 }
 
 void ListElement::moveUp()
@@ -151,6 +191,10 @@ void ListElement::moveDown()
 void ListElement::draw()
 {
 	wborder(m_win, '|', '|', '-', '-', '+', '+', '+', '+');
+
+	m_counterDigitCount = std::floor(std::log10(c_data.size() == 0 ? 1 : c_data.size()) + 1); // Counter format: AA...AA/BB...BB, e.g. 001/100
+	m_wTable = c_w - (m_counterDigitCount * 2 + 3);
+
 	drawEntryCounter();
 	drawHeaders();
 

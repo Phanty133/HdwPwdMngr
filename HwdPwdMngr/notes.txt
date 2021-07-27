@@ -45,3 +45,15 @@ Ideas:
 
 FYI:
 	- Press = Hold for ~250ms?
+
+Navbar:
+	Default:
+		<Enter> Select
+		<F1> Account menu
+		<F2> Settings
+		<F3> Add account
+		<F10> Exit
+	When account selected:
+		<Esc> Deselect
+		<F1> Edit account
+		<F2> Delete account

@@ -13,7 +13,7 @@ WINDOW* openPopupInfo(std::string title, std::string msg) {
 	const int popupWidth = lineWidth + POPUP_PADDING_H * 2;
 
 	wattron(win, A_BOLD);
-	const int titleHeight = wprintInLines(win, title.c_str(), lineWidth, POPUP_PADDING_V, POPUP_PADDING_H, CENTER);
+	const int titleHeight = wprintInLines(win, title.c_str(), lineWidth, POPUP_PADDING_V, POPUP_PADDING_H, TextAlign::CENTER);
 	wattroff(win, A_BOLD);
 
 	const int msgHeight = wprintInLines(win, msg, lineWidth, POPUP_PADDING_V + titleHeight + 1, POPUP_PADDING_H + titleHeight + 1);
